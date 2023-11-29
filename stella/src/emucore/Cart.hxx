@@ -20,8 +20,10 @@
 #ifndef CARTRIDGE_HXX
 #define CARTRIDGE_HXX
 
+#ifndef TARGET_GNW
 #include <fstream>
 #include <sstream>
+#endif
 
 class Cartridge;
 class Properties;

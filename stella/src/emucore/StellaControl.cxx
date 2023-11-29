@@ -127,6 +127,7 @@ void Controller::set(AnalogPin pin, Int32 value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Controller::save(Serializer& out) const
 {
+#ifndef TARGET_GNW
   try
   {
     // Output the digital pins
@@ -145,11 +146,15 @@ bool Controller::save(Serializer& out) const
     return false;
   }
   return true;
+#else
+  return false;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Controller::load(Serializer& in)
 {
+#ifndef TARGET_GNW
   try
   {
     // Input the digital pins
@@ -168,6 +173,9 @@ bool Controller::load(Serializer& in)
     return false;
   }
   return true;
+#else
+  return false;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

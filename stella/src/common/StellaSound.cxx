@@ -17,12 +17,16 @@
 // $Id: Sound.cxx 2838 2014-01-17 23:34:03Z stephena $
 //============================================================================
 
+#ifndef TARGET_GNW
 #include <sstream>
+#endif
 #include <cmath>
 
 #include "TIASnd.hxx"
 #include "FrameBuffer.hxx"
+#ifndef TARGET_GNW
 #include "Settings.hxx"
+#endif
 #include "System.hxx"
 #include "OSystem.hxx"
 #include "Console.hxx"
@@ -51,7 +55,9 @@ Sound::~Sound()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sound::setEnabled(bool state)
 {
+#ifndef TARGET_GNW
   myOSystem->settings().setValue("sound", state);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,7 +65,11 @@ void Sound::open()
 {
   myIsEnabled = false;
   mute(true);
+#ifndef TARGET_GNW
   if(!myIsInitializedFlag || !myOSystem->settings().getBool("sound"))
+#else
+  if(!myIsInitializedFlag)
+#endif
   {
     return;
   }
@@ -70,7 +80,11 @@ void Sound::open()
       myTIASound.channels(2, myNumChannels == 2);
 
   // Adjust volume to that defined in settings
+#ifndef TARGET_GNW
   myVolume = myOSystem->settings().getInt("volume");
+#else
+  myVolume = 100;
+#endif
   setVolume(myVolume);
 
   myIsEnabled = true;
@@ -113,7 +127,9 @@ void Sound::setVolume(Int32 percent)
 {
   if(myIsInitializedFlag && (percent >= 0) && (percent <= 100))
   {
+#ifndef TARGET_GNW
     myOSystem->settings().setValue("volume", percent);
+#endif
     myVolume = percent;
     myTIASound.volume(percent);
   }
@@ -122,6 +138,7 @@ void Sound::setVolume(Int32 percent)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sound::adjustVolume(Int8 direction)
 {
+#ifndef TARGET_GNW
   Int32 percent = myVolume;
 
   if(direction == -1)
@@ -133,6 +150,7 @@ void Sound::adjustVolume(Int8 direction)
     return;
 
   setVolume(percent);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

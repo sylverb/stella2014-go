@@ -27,10 +27,12 @@
 #include "EventHandler.hxx"
 #include "Joystick.hxx"
 #include "Keyboard.hxx"
+#ifndef TARGET_GNW
 #include "KidVid.hxx"
+#include "CompuMate.hxx"
+#endif
 #include "Genesis.hxx"
 #include "MindLink.hxx"
-#include "CompuMate.hxx"
 #include "M6502.hxx"
 #include "M6532.hxx"
 #include "Paddles.hxx"
@@ -111,6 +113,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySystem->attach(myCart);
 
   // Auto-detect NTSC/PAL mode if it's requested
+  #ifndef TARGET_GNW
   string autodetected = "";
   myDisplayFormat = myProperties.get(Display_Format);
   if(myDisplayFormat == "AUTO" || myOSystem->settings().getBool("rominfo"))
@@ -135,6 +138,13 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
     myOSystem->settings().setValue("fastscbios", fastscbios);
   }
   myConsoleInfo.DisplayFormat = myDisplayFormat + autodetected;
+
+#else
+  mySystem->reset(true);  // autodetect in reset enabled
+  for(int i = 0; i < 60; ++i)
+    myTIA->update();
+  myDisplayFormat = myTIA->isPAL() ? "PAL" : "NTSC";
+#endif
 
   // Set up the correct properties used when toggling format
   // Note that this can be overridden if a format is forced
@@ -179,7 +189,9 @@ Console::~Console()
 {
   delete mySystem;
   delete mySwitches;
+#ifndef TARGET_GNW
   delete myCMHandler;
+#endif
   delete myControllers[0];
   delete myControllers[1];
 }
@@ -187,6 +199,7 @@ Console::~Console()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Console::save(Serializer& out) const
 {
+#ifndef TARGET_GNW
   try
   {
     // First save state for the system
@@ -204,11 +217,15 @@ bool Console::save(Serializer& out) const
   }
 
   return true;  // success
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Console::load(Serializer& in)
 {
+#ifndef TARGET_GNW
   try
   {
     // First load state for the system
@@ -226,6 +243,9 @@ bool Console::load(Serializer& in)
   }
 
   return true;  // success
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -275,9 +295,11 @@ void Console::toggleFormat(int direction)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::toggleColorLoss()
 {
+#ifndef TARGET_GNW
   bool colorloss = !myOSystem->settings().getBool("colorloss");
   myOSystem->settings().setValue("colorloss", colorloss);
   myTIA->enableColorLoss(colorloss);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -289,6 +311,7 @@ void Console::toggleColorLoss(bool state)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::togglePalette()
 {
+#ifndef TARGET_GNW
   string palette;
   palette = myOSystem->settings().getString("palette");
  
@@ -313,6 +336,7 @@ void Console::togglePalette()
   myOSystem->settings().setValue("palette", palette);
 
   setPalette(palette);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -400,7 +424,12 @@ FBInitStatus Console::initializeVideo(bool full)
   bool enable = myProperties.get(Display_Phosphor) == "YES";
   int blend = atoi(myProperties.get(Display_PPBlend).c_str());
   myOSystem->frameBuffer().enablePhosphor(enable, blend);
+
+#ifndef TARGET_GNW
   setPalette(myOSystem->settings().getString("palette"));
+#else
+  setPalette("standard");
+#endif
 
   // Set the correct framerate based on the format of the ROM
   // This can be overridden by changing the framerate on the
@@ -424,10 +453,16 @@ void Console::initializeAudio()
   // the commandline, but it can't be saved.
   //float framerate = myOSystem->settings().getFloat("framerate");
   //if(framerate > 0) myFramerate = float(framerate);
+#ifndef TARGET_GNW
   const string& sound = myProperties.get(Cartridge_Sound);
+#endif
 
   myOSystem->sound().close();
+#ifndef TARGET_GNW
   myOSystem->sound().setChannels(sound == "STEREO" ? 2 : 1);
+#else
+  myOSystem->sound().setChannels(1);
+#endif
   myOSystem->sound().setFrameRate(myFramerate);
   myOSystem->sound().open();
 
@@ -484,9 +519,11 @@ void Console::changeYStart(int direction)
   myTIA->setYStart(ystart);
   myTIA->frameReset();
 
+#ifndef TARGET_GNW
   ostringstream val;
   val << ystart;
   myProperties.set(Display_YStart, val.str());
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -513,9 +550,11 @@ void Console::changeHeight(int direction)
   myTIA->frameReset();
   initializeVideo();  // takes care of refreshing the screen
 
+#ifndef TARGET_GNW
   ostringstream val;
   val << height;
   myProperties.set(Display_Height, val.str());
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -571,6 +610,7 @@ void Console::setControllers(const string& rommd5)
 
   // Check for CompuMate controllers; they are special in that a handler
   // creates them for us, and also that they must be used in both ports
+#ifndef TARGET_GNW
   if(left == "COMPUMATE" || right == "COMPUMATE")
   {
     delete myCMHandler;
@@ -590,6 +630,10 @@ void Console::setControllers(const string& rommd5)
   {
     leftPort = 1; rightPort = 0;
   }
+#else
+  int leftPort = 0;
+  int rightPort = 1;
+#endif
 
   // Also check if we should swap the paddles plugged into a jack
   bool swapPaddles = myProperties.get(Controller_SwapPaddles) == "YES";
@@ -647,8 +691,9 @@ void Console::setControllers(const string& rommd5)
   {
     myControllers[leftPort] = new Joystick(Controller::Left, myEvent, *mySystem);
   }
- 
+
   // Construct right controller
+ #ifndef TARGET_GNW
   if(right == "BOOSTERGRIP")
   {
     myControllers[rightPort] = new BoosterGrip(Controller::Right, myEvent, *mySystem);
@@ -715,6 +760,7 @@ void Console::setControllers(const string& rommd5)
     myControllers[rightPort] = new MindLink(Controller::Right, myEvent, *mySystem);
   }
   else
+#endif
   {
     myControllers[rightPort] = new Joystick(Controller::Right, myEvent, *mySystem);
   }
@@ -723,6 +769,7 @@ void Console::setControllers(const string& rommd5)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::loadUserPalette()
 {
+#ifndef TARGET_GNW
   const string& palette = myOSystem->paletteFile();
   ifstream in(palette.c_str(), ios::binary);
   if(!in)
@@ -774,6 +821,7 @@ void Console::loadUserPalette()
 
   in.close();
   myUserPaletteDefined = true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -819,7 +867,9 @@ void Console::setFramerate(float framerate)
 {
   myFramerate = framerate;
   myOSystem->setFramerate(framerate);
+#ifndef TARGET_GNW
   myOSystem->sound().setFrameRate(framerate);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -866,9 +916,11 @@ void Console::addDebugger()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::stateChanged(EventHandler::State state)
 {
+#ifndef TARGET_GNW
   // For now, only the CompuMate cares about state changes
   if(myCMHandler)
     myCMHandler->enableKeyHandling(state == EventHandler::S_EMULATE);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

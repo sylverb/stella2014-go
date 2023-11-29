@@ -20,7 +20,9 @@
 #ifndef VARIANT_HXX
 #define VARIANT_HXX
 
+#ifndef TARGET_GNW
 #include <sstream>
+#endif
 #include "Array.hxx"
 #include "bspf.hxx"
 
@@ -39,10 +41,12 @@ class Variant
     string data;
 
     // Use singleton so we use only one ostringstream object
+#ifndef TARGET_GNW
     inline ostringstream& buf() { 
       static ostringstream buf;
       return buf;
     }
+#endif
 
   public:
     Variant() : data("") { }
@@ -50,12 +54,14 @@ class Variant
     Variant(const string& s) : data(s) { }
     Variant(const char* s) : data(s) { }
 
+#ifndef TARGET_GNW
     Variant(Int32 i) { buf().str(""); buf() << i; data = buf().str(); }
     Variant(long unsigned int i) { buf().str(""); buf() << i; data = buf().str(); }
     Variant(unsigned int i) { buf().str(""); buf() << i; data = buf().str(); }
     Variant(float f) { buf().str(""); buf() << f; data = buf().str(); }
     Variant(double d) { buf().str(""); buf() << d; data = buf().str(); }
     Variant(bool b) { buf().str(""); buf() << b; data = buf().str(); }
+#endif
 
     // Conversion methods
     const string& toString() const { return data; }

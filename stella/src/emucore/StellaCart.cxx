@@ -56,7 +56,10 @@
 #include "CartSB.hxx"
 #include "CartUA.hxx"
 #include "CartX07.hxx"
+#ifndef TARGET_GNW
 #include "MD5.hxx"
+#endif
+
 #include "Props.hxx"
 #include "Settings.hxx"
 
@@ -68,18 +71,29 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
   string type = dtype;
 
   // Collect some info about the ROM
+#ifndef TARGET_GNW
   ostringstream buf;
+#endif
 
   // See if we should try to auto-detect the cartridge type
   // If we ask for extended info, always do an autodetect
   string autodetect = "";
+#ifndef TARGET_GNW
   if(type == "AUTO" || settings.getBool("rominfo"))
   {
     const string& detected = autodetectType(image, size);
     autodetect = "*";
     type       = detected;
   }
+#else
+  const string& detected = autodetectType(image, size);
+  autodetect = "*";
+  type       = detected;
+#endif
+
+#ifndef TARGET_GNW
   buf << type << autodetect;
+#endif
 
   // Check for multicart first; if found, get the correct part of the image
   if(type == "2IN1")
@@ -89,7 +103,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 2, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -101,7 +117,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 4, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -113,7 +131,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 8, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -125,7 +145,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 16, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -137,7 +159,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 32, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -149,7 +173,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 64, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -161,7 +187,9 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     {
       dtype = type;
       type = createFromMultiCart(image, size, 128, md5, id, settings);
+#ifndef TARGET_GNW
       buf << id;
+#endif
     }
     else
       dtype = "WRONG_SIZE";
@@ -248,11 +276,13 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
      return NULL;
   }
 
+#ifndef TARGET_GNW
   if(size < 1024)
     buf << " (" << size << "B) ";
   else
     buf << " (" << (size/1024) << "K) ";
   myAboutString = buf.str();
+#endif
 
   return cartridge;
 }
@@ -267,6 +297,7 @@ string Cartridge::createFromMultiCart(const uInt8*& image, uInt32& size,
   image += i*size;
 
   // We need a new md5 and name
+#ifndef TARGET_GNW
   md5 = MD5(image, size);
   ostringstream buf;
   buf << " [G" << (i+1) << "]";
@@ -274,6 +305,7 @@ string Cartridge::createFromMultiCart(const uInt8*& image, uInt32& size,
 
   // Move to the next game the next time this ROM is loaded
   settings.setValue("romloadcount", (i+1)%numroms);
+#endif
 
   if(size <= 2048)       return "2K";
   else if(size == 4096)  return "4K";
@@ -301,6 +333,7 @@ Cartridge::~Cartridge()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Cartridge::save(ofstream& out)
 {
+#ifndef TARGET_GNW
   int size = -1;
 
   const uInt8* image = getImage(size);
@@ -309,7 +342,7 @@ bool Cartridge::save(ofstream& out)
 
   for(int i=0; i<size; i++)
     out << image[i];
-
+#endif
   return true;
 }
 

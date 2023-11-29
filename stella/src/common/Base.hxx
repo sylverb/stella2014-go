@@ -20,8 +20,10 @@
 #ifndef BASE_HXX
 #define BASE_HXX
 
+#ifndef TARGET_GNW
 #include <iostream>
 #include <iomanip>
+#endif
 
 #include "bspf.hxx"
 
@@ -54,6 +56,7 @@ class Base
     };
 
   public:
+#ifndef TARGET_GNW
     /** Get/set the number base when parsing numeric values */
     static void setFormat(Base::Format base) { myDefaultBase = base; }
     static Base::Format format()             { return myDefaultBase; }
@@ -79,11 +82,13 @@ class Base
     /** Convert integer to a string in the given base format */
     static string toString(int value,
       Common::Base::Format outputBase = Common::Base::F_DEFAULT);
+#endif
 
   private:      // Make sure this class is never instantiated
     Base() { }
 
   private:
+#ifndef TARGET_GNW
     // Default format to use when none is specified
     static Format myDefaultBase;
 
@@ -95,6 +100,7 @@ class Base
     static const char* myLowerFmt[4];
     static const char* myUpperFmt[4];
     static const char** myFmt;
+#endif
 };
 
 } // Namespace Common

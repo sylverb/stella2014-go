@@ -21,7 +21,7 @@
 #include "Base.hxx"
 
 namespace Common {
-
+#ifndef TARGET_GNW
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Base::setHexUppercase(bool enable)
 {
@@ -111,5 +111,5 @@ const char* Base::myUpperFmt[4] = {
   "%1X", "%02X", "%04X", "%08X"
 };
 const char** Base::myFmt = Base::myLowerFmt;
-
+#endif
 } // Namespace Common

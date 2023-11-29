@@ -17,7 +17,9 @@
 // $Id: Serializer.cxx 2838 2014-01-17 23:34:03Z stephena $
 //============================================================================
 
+#ifndef TARGET_GNW
 #include <fstream>
+#endif
 
 #include "Serializer.hxx"
 
@@ -26,6 +28,7 @@ Serializer::Serializer(const string& filename, bool readonly)
   : myStream(NULL),
     myUseFilestream(true)
 {
+#ifndef TARGET_GNW
   if(readonly)
   {
     //FilesystemNode node(filename);
@@ -64,6 +67,7 @@ Serializer::Serializer(const string& filename, bool readonly)
     else
       delete str;
   }
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -71,6 +75,7 @@ Serializer::Serializer(void)
   : myStream(NULL),
     myUseFilestream(false)
 {
+#ifndef TARGET_GNW
   myStream = new stringstream(ios::in | ios::out | ios::binary);
   
   // For some reason, Windows and possibly OSX needs to store something in
@@ -81,11 +86,13 @@ Serializer::Serializer(void)
     putBool(true);
     reset();
   }
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::~Serializer(void)
 {
+#ifndef TARGET_GNW
   if(myStream != NULL)
   {
     if(myUseFilestream)
@@ -94,6 +101,7 @@ Serializer::~Serializer(void)
     delete myStream;
     myStream = NULL;
   }
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -105,16 +113,20 @@ bool Serializer::isValid(void)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::reset(void)
 {
+#ifndef TARGET_GNW
   myStream->clear();
   myStream->seekg(ios_base::beg);
   myStream->seekp(ios_base::beg);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt8 Serializer::getByte(void)
 {
   char buf;
+#ifndef TARGET_GNW
   myStream->read(&buf, 1);
+#endif
 
   return buf;
 }
@@ -122,14 +134,18 @@ uInt8 Serializer::getByte(void)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::getByteArray(uInt8* array, uInt32 size)
 {
+#ifndef TARGET_GNW
   myStream->read((char*)array, size);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt16 Serializer::getShort(void)
 {
   uInt16 val = 0;
+#ifndef TARGET_GNW
   myStream->read((char*)&val, sizeof(uInt16));
+#endif
 
   return val;
 }
@@ -137,14 +153,18 @@ uInt16 Serializer::getShort(void)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::getShortArray(uInt16* array, uInt32 size)
 {
+#ifndef TARGET_GNW
   myStream->read((char*)array, sizeof(uInt16)*size);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 Serializer::getInt(void)
 {
   uInt32 val = 0;
+#ifndef TARGET_GNW
   myStream->read((char*)&val, sizeof(uInt32));
+#endif
 
   return val;
 }
@@ -152,7 +172,9 @@ uInt32 Serializer::getInt(void)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::getIntArray(uInt32* array, uInt32 size)
 {
+#ifndef TARGET_GNW
   myStream->read((char*)array, sizeof(uInt32)*size);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -161,7 +183,9 @@ string Serializer::getString(void)
   int len = getInt();
   string str;
   str.resize(len);
+#ifndef TARGET_GNW
   myStream->read(&str[0], len);
+#endif
 
   return str;
 }
@@ -169,43 +193,59 @@ string Serializer::getString(void)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Serializer::getBool(void)
 {
+#ifndef TARGET_GNW
   return getByte() == TruePattern;
+#else
+  return false;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putByte(uInt8 value)
 {
+#ifndef TARGET_GNW
   myStream->write((char*)&value, 1);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putByteArray(const uInt8* array, uInt32 size)
 {
+#ifndef TARGET_GNW
   myStream->write((char*)array, size);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putShort(uInt16 value)
 {
+#ifndef TARGET_GNW
   myStream->write((char*)&value, sizeof(uInt16));
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putShortArray(const uInt16* array, uInt32 size)
 {
+#ifndef TARGET_GNW
   myStream->write((char*)array, sizeof(uInt16)*size);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putInt(uInt32 value)
 {
+#ifndef TARGET_GNW
   myStream->write((char*)&value, sizeof(uInt32));
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putIntArray(const uInt32* array, uInt32 size)
 {
+#ifndef TARGET_GNW
   myStream->write((char*)array, sizeof(uInt32)*size);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -213,7 +253,9 @@ void Serializer::putString(const string& str)
 {
   int len = str.length();
   putInt(len);
+#ifndef TARGET_GNW
   myStream->write(str.data(), len);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

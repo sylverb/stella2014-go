@@ -265,6 +265,7 @@ bool TIA::save(Serializer& out) const
 {
   const string& device = name();
 
+#ifndef TARGET_GNW
   try
   {
     out.putString(device);
@@ -360,6 +361,9 @@ bool TIA::save(Serializer& out) const
   }
 
   return true;
+#else
+  return false;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -367,6 +371,7 @@ bool TIA::load(Serializer& in)
 {
   const string& device = name();
 
+#ifndef TARGET_GNW
   try
   {
     if(in.getString() != device)
@@ -468,11 +473,15 @@ bool TIA::load(Serializer& in)
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool TIA::saveDisplay(Serializer& out) const
 {
+#ifndef TARGET_GNW
   try
   {
     out.putBool(myPartialFrameFlag);
@@ -485,11 +494,15 @@ bool TIA::saveDisplay(Serializer& out) const
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool TIA::loadDisplay(Serializer& in)
 {
+#ifndef TARGET_GNW
   try
   {
     myPartialFrameFlag = in.getBool();
@@ -512,6 +525,9 @@ bool TIA::loadDisplay(Serializer& in)
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -853,7 +869,9 @@ bool TIA::driveUnusedPinsRandom(uInt8 mode)
   if(mode == 0 || mode == 1)
   {
     myTIAPinsDriven = bool(mode);
+#ifndef TARGET_GNW
     mySettings.setValue("tiadriven", myTIAPinsDriven);
+#endif
   }
   return myTIAPinsDriven;
 }

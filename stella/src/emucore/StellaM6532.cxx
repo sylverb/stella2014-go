@@ -17,7 +17,7 @@
 // $Id: M6532.cxx 2838 2014-01-17 23:34:03Z stephena $
 //============================================================================
 
-#include <iostream>
+//#include <iostream>
 
 #include "Console.hxx"
 #include "Settings.hxx"
@@ -42,10 +42,12 @@ M6532::~M6532()
 void M6532::reset()
 {
   // Initialize the 128 bytes of memory
+#ifndef TARGET_GNW
   if(mySettings.getBool("ramrandom"))
     for(uInt32 t = 0; t < 128; ++t)
       myRAM[t] = mySystem->randGenerator().next();
   else
+#endif
     memset(myRAM, 0, 128);
 
   // The timer absolutely cannot be initialized to zero; some games will
@@ -330,6 +332,7 @@ void M6532::setPinState(bool swcha)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6532::save(Serializer& out) const
 {
+#ifndef TARGET_GNW
   try
   {
     out.putString(name());
@@ -356,11 +359,15 @@ bool M6532::save(Serializer& out) const
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6532::load(Serializer& in)
 {
+#ifndef TARGET_GNW
   try
   {
     if(in.getString() != name())
@@ -388,6 +395,9 @@ bool M6532::load(Serializer& in)
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

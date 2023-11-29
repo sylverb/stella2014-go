@@ -30,6 +30,7 @@
 Settings::Settings(OSystem* osystem)
   : myOSystem(osystem)
 {
+#ifndef TARGET_GNW
   // Add this settings object to the OSystem
   myOSystem->attach(this);
 
@@ -142,6 +143,7 @@ Settings::Settings(OSystem* osystem)
 
   // Thumb ARM emulation options
   setInternal("thumb.trapfatal", "true");
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -153,6 +155,7 @@ Settings::~Settings()
 
 const Variant& Settings::value(const string& key) const
 {
+#ifndef TARGET_GNW
   // Try to find the named setting and answer its value
   int idx = -1;
   if((idx = getInternalPos(key)) != -1)
@@ -160,16 +163,19 @@ const Variant& Settings::value(const string& key) const
   else if((idx = getExternalPos(key)) != -1)
     return myExternalSettings[idx].value;
   else
+#endif
     return EmptyVariant;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Settings::setValue(const string& key, const Variant& value)
 {
+#ifndef TARGET_GNW
   if(int idx = getInternalPos(key) != -1)
     setInternal(key, value, idx);
   else
     setExternal(key, value);
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

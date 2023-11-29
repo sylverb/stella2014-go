@@ -46,11 +46,13 @@ typedef uint64_t uInt64;
 
 // The following code should provide access to the standard C++ objects and
 // types: string, ostream, istream, etc.
+#ifndef TARGET_GNW
 #include <algorithm>
 #include <iomanip>
+#include <cctype>
+#endif
 #include <string>
 #include <cstring>
-#include <cctype>
 using namespace std;
 
 static const string EmptyString("");

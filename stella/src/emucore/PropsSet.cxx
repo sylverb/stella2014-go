@@ -46,6 +46,7 @@ PropertiesSet::~PropertiesSet()
 bool PropertiesSet::getMD5(const string& md5, Properties& properties,
                            bool useDefaults) const
 {
+#ifndef TARGET_GNW
   properties.setDefaults();
   bool found = false;
 
@@ -104,11 +105,15 @@ bool PropertiesSet::getMD5(const string& md5, Properties& properties,
   }
 
   return found;
+#else
+  return false;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void PropertiesSet::insert(const Properties& properties, bool save)
 {
+#ifndef TARGET_GNW
   // Note that the following code is optimized for insertion when an item
   // doesn't already exist, and when the external properties file is
   // relatively small (which is the case with current versions of Stella,
@@ -134,11 +139,14 @@ void PropertiesSet::insert(const Properties& properties, bool save)
     list.erase(ret.first);
     list.insert(make_pair(md5, properties));
   }
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void PropertiesSet::removeMD5(const string& md5)
 {
+#ifndef TARGET_GNW
   // We only remove from the external list
   myExternalProps.erase(md5);
+#endif
 }

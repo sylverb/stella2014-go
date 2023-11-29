@@ -29,7 +29,9 @@ class Launcher;
 class Menu;
 class Properties;
 class PropertiesSet;
+#ifndef TARGET_GNW
 class SerialPort;
+#endif
 class Settings;
 class Sound;
 class StateManager;
@@ -121,7 +123,9 @@ class OSystem
 
       @return The serial port object
     */
+#ifndef TARGET_GNW
     SerialPort& serialPort() const { return *mySerialPort; }
+#endif
 
 #ifdef CHEATCODE_SUPPORT
     /**
@@ -332,7 +336,9 @@ class OSystem
     PropertiesSet* myPropSet;
 
     // Pointer to the serial port object
+#ifndef TARGET_GNW
     SerialPort* mySerialPort;
+#endif
 
   private:
     string myNVRamDir;

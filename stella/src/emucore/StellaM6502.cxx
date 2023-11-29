@@ -75,6 +75,7 @@ void M6502::reset()
 
   // Set registers to default values
   SP = 0xff;
+#ifndef TARGET_GNW
   if(mySettings.getBool("cpurandom"))
   {
     A = mySystem->randGenerator().next();
@@ -87,6 +88,10 @@ void M6502::reset()
     A = X = Y = 0;
     PS(0x20);
   }
+#else
+  A = X = Y = 0;
+  PS(0x20);
+#endif
 
   // Reset access flag
   myLastAccessWasRead = true;
@@ -236,6 +241,7 @@ bool M6502::save(Serializer& out) const
 {
   const string& CPU = name();
 
+#ifndef TARGET_GNW
   try
   {
     out.putString(CPU);
@@ -275,6 +281,9 @@ bool M6502::save(Serializer& out) const
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -282,6 +291,7 @@ bool M6502::load(Serializer& in)
 {
   const string& CPU = name();
 
+#ifndef TARGET_GNW
   try
   {
     if(in.getString() != CPU)
@@ -322,6 +332,9 @@ bool M6502::load(Serializer& in)
   }
 
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

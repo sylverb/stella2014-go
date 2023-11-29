@@ -7,20 +7,26 @@ OSystem::OSystem()
     mySettings     = 0;
     myFrameBuffer  = new FrameBuffer();
     mySound        = new Sound(this);
+#ifndef TARGET_GNW
     mySerialPort   = new SerialPort();
+#endif
     myEventHandler = new EventHandler(this);
+#ifndef TARGET_GNW
     myPropSet      = new PropertiesSet(this);
     Paddles::setDigitalSensitivity(50);
     Paddles::setMouseSensitivity(5);
+#endif
 }
 
 OSystem::~OSystem()
 {
     delete myFrameBuffer;
     delete mySound;
+#ifndef TARGET_GNW
     delete mySerialPort;
-    delete myEventHandler;
     delete myPropSet;
+#endif
+    delete myEventHandler;
 }
 
 bool OSystem::create() { return 1; }

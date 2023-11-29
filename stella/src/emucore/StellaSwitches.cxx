@@ -111,6 +111,7 @@ void Switches::update()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool Switches::save(Serializer& out) const
 {
+#ifndef TARGET_GNW
   try
   {
     out.putByte(mySwitches);
@@ -120,11 +121,15 @@ bool Switches::save(Serializer& out) const
     return false;
   }
   return true;
+#else
+  return true;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool Switches::load(Serializer& in)
 {
+#ifndef TARGET_GNW
   try
   {
     mySwitches = in.getByte();
@@ -134,4 +139,7 @@ bool Switches::load(Serializer& in)
     return false;
   }
   return true;
+#else
+  return true;
+#endif
 }

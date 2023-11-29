@@ -20,8 +20,10 @@
 #ifndef SERIALIZER_HXX
 #define SERIALIZER_HXX
 
+#ifndef TARGET_GNW
 #include <iostream>
 #include <sstream>
+#endif
 #include "bspf.hxx"
 
 /**
@@ -195,14 +197,20 @@ class Serializer
 
     std::string get()
     {
+#ifndef TARGET_GNW
         stringstream *s = (stringstream*)myStream;
         return s->str();
+#else
+        return "";
+#endif
     }
 
     void set(const std::string &data)
     {
+#ifndef TARGET_GNW
         stringstream *s = (stringstream*)myStream;
         s->str(data);
+#endif
     }
 
   private:

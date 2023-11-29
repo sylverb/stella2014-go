@@ -19,7 +19,9 @@
 
 #include <cctype>
 #include <algorithm>
+#ifndef TARGET_GNW
 #include <sstream>
+#endif
 
 #include "bspf.hxx"
 #include "Props.hxx"
@@ -61,7 +63,9 @@ void Properties::set(PropertyType key, const string& value)
     {
       case Cartridge_Type:
       case Display_Format:
+#ifndef TARGET_GNW
         if(BSPF_equalsIgnoreCase(myProperties[key], "AUTO-DETECT"))
+#endif
           myProperties[key] = "AUTO";
       case Cartridge_Sound:
       case Console_LeftDifficulty:
@@ -83,9 +87,11 @@ void Properties::set(PropertyType key, const string& value)
       {
         int blend = atoi(myProperties[key].c_str());
         if(blend < 0 || blend > 100) blend = 77;
+#ifndef TARGET_GNW
         ostringstream buf;
         buf << blend;
         myProperties[key] = buf.str();
+#endif
         break;
       }
 
@@ -98,6 +104,7 @@ void Properties::set(PropertyType key, const string& value)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Properties::load(istream& in)
 {
+#ifndef TARGET_GNW
   setDefaults();
 
   // Loop reading properties
@@ -126,11 +133,13 @@ void Properties::load(istream& in)
     PropertyType type = getPropertyType(key);
     set(type, value);
   }
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Properties::save(ostream& out) const
 {
+#ifndef TARGET_GNW
   // Write out each of the key and value pairs
   bool changed = false;
   for(int i = 0; i < LastPropType; ++i)
@@ -153,11 +162,13 @@ void Properties::save(ostream& out) const
     out.put('\n');
     out.put('\n');
   }
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 string Properties::readQuotedString(istream& in)
 {
+#ifndef TARGET_GNW
   char c;
 
   // Read characters until we see a quote
@@ -184,11 +195,15 @@ string Properties::readQuotedString(istream& in)
   }
 
   return s;
+#else
+  return "";
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Properties::writeQuotedString(ostream& out, const string& s)
 {
+#ifndef TARGET_GNW
   out.put('"');
   for(uInt32 i = 0; i < s.length(); ++i)
   {
@@ -206,6 +221,7 @@ void Properties::writeQuotedString(ostream& out, const string& s)
       out.put(s[i]);
   }
   out.put('"');
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
