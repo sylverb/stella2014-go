@@ -30,14 +30,24 @@
 #ifndef TARGET_GNW
 #include "KidVid.hxx"
 #include "CompuMate.hxx"
+#else
+extern uInt8 a2600_y_offset;
+extern uInt16 a2600_height;
+extern char a2600_control[];
+extern bool a2600_control_swap;
+extern bool a2600_swap_paddle;
+extern char a2600_display_mode[];
+extern bool a2600_fastscbios;
 #endif
 #include "Genesis.hxx"
 #include "MindLink.hxx"
 #include "M6502.hxx"
 #include "M6532.hxx"
 #include "Paddles.hxx"
+#ifndef TARGET_GNW
 #include "Props.hxx"
 #include "PropsSet.hxx"
+#endif
 #include "SaveKey.hxx"
 #include "Settings.hxx" 
 #include "Sound.hxx"
@@ -69,10 +79,16 @@
 #include "Console.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef TARGET_GNW
 Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
+#else
+Console::Console(OSystem* osystem, Cartridge* cart)
+#endif
   : myOSystem(osystem),
     myEvent(osystem->eventHandler().event()),
+#ifndef TARGET_GNW
     myProperties(props),
+#endif
     myTIA(0),
     mySwitches(0),
     mySystem(0),
@@ -84,10 +100,16 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
     myUserPaletteDefined(false)
 {
   // Load user-defined palette for this ROM
+#ifndef TARGET_GNW
   loadUserPalette();
+#endif
 
   // Create switches for the console
+#ifndef TARGET_GNW
   mySwitches = new Switches(myEvent, myProperties);
+#else
+  mySwitches = new Switches(myEvent);
+#endif
 
   // Construct the system and components
   mySystem = new System(13, 6);
@@ -113,37 +135,54 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   mySystem->attach(myCart);
 
   // Auto-detect NTSC/PAL mode if it's requested
-  #ifndef TARGET_GNW
   string autodetected = "";
+
+#ifndef TARGET_GNW
   myDisplayFormat = myProperties.get(Display_Format);
+#else
+  myDisplayFormat = a2600_display_mode;
+#endif
+
+#ifndef TARGET_GNW
   if(myDisplayFormat == "AUTO" || myOSystem->settings().getBool("rominfo"))
+#else
+  if(myDisplayFormat == "AUTO")
+#endif
   {
     // Run the TIA, looking for PAL scanline patterns
     // We turn off the SuperCharger progress bars, otherwise the SC BIOS
     // will take over 250 frames!
     // The 'fastscbios' option must be changed before the system is reset
+#ifndef TARGET_GNW
     bool fastscbios = myOSystem->settings().getBool("fastscbios");
     myOSystem->settings().setValue("fastscbios", true);
+#else
+    bool fastscbios = a2600_fastscbios;
+    a2600_fastscbios = true;
+#endif
     mySystem->reset(true);  // autodetect in reset enabled
     for(int i = 0; i < 60; ++i)
       myTIA->update();
     myDisplayFormat = myTIA->isPAL() ? "PAL" : "NTSC";
+#ifndef TARGET_GNW
     if(myProperties.get(Display_Format) == "AUTO")
+#else
+    if(strcmp(a2600_display_mode,"AUTO") == 0)
+#endif
     {
       autodetected = "*";
       myCurrentFormat = 0;
     }
 
     // Don't forget to reset the SC progress bars again
+#ifndef TARGET_GNW
     myOSystem->settings().setValue("fastscbios", fastscbios);
-  }
-  myConsoleInfo.DisplayFormat = myDisplayFormat + autodetected;
-
 #else
-  mySystem->reset(true);  // autodetect in reset enabled
-  for(int i = 0; i < 60; ++i)
-    myTIA->update();
-  myDisplayFormat = myTIA->isPAL() ? "PAL" : "NTSC";
+    a2600_fastscbios = fastscbios;
+#endif
+  }
+#ifndef TARGET_GNW
+  myConsoleInfo.DisplayFormat = myDisplayFormat + autodetected;
 #endif
 
   // Set up the correct properties used when toggling format
@@ -161,20 +200,29 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
 
   // Add the real controllers for this system
   // This must be done before the debugger is initialized
+  #ifndef TARGET_GNW
   const string& md5 = myProperties.get(Cartridge_MD5);
+  #else
+  const string& md5 = "";
+  #endif
   setControllers(md5);
 
   // Bumper Bash always requires all 4 directions
   // Other ROMs can use it if the setting is enabled
+#ifndef TARGET_GNW
   bool joyallow4 = md5 == "aa1c41f86ec44c0a44eb64c332ce08af" ||
                    md5 == "1bf503c724001b09be79c515ecfcbd03" ||
                    myOSystem->settings().getBool("joyallow4");
   myOSystem->eventHandler().allowAllDirections(joyallow4);
+#else
+  myOSystem->eventHandler().allowAllDirections(false);
+#endif
 
   // Reset the system to its power-on state
   mySystem->reset();
 
   // Finally, add remaining info about the console
+  #ifndef TARGET_GNW
   myConsoleInfo.CartName   = myProperties.get(Cartridge_Name);
   myConsoleInfo.CartMD5    = myProperties.get(Cartridge_MD5);
   myConsoleInfo.Control0   = myControllers[0]->about();
@@ -182,6 +230,7 @@ Console::Console(OSystem* osystem, Cartridge* cart, const Properties& props)
   myConsoleInfo.BankSwitch = cart->about();
 
   myCart->setRomName(myConsoleInfo.CartName);
+  #endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -248,6 +297,7 @@ bool Console::load(Serializer& in)
 #endif
 }
 
+#ifndef TARGET_GNW
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::toggleFormat(int direction)
 {
@@ -291,6 +341,7 @@ void Console::toggleFormat(int direction)
   myTIA->frameReset();
   initializeVideo();  // takes care of refreshing the screen
 }
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::toggleColorLoss()
@@ -380,6 +431,7 @@ const uInt32* Console::getPalette(int direction) const
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef TARGET_GNW
 void Console::togglePhosphor()
 {
   const string& phosphor = myProperties.get(Display_Phosphor);
@@ -398,12 +450,15 @@ void Console::togglePhosphor()
 
   myOSystem->frameBuffer().enablePhosphor(enable, blend);
 }
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef TARGET_GNW
 void Console::setProperties(const Properties& props)
 {
   myProperties = props;
 }
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FBInitStatus Console::initializeVideo(bool full)
@@ -412,8 +467,12 @@ FBInitStatus Console::initializeVideo(bool full)
 
   if(full)
   {
+#ifndef TARGET_GNW
     const string& title = string("Stella ") + STELLA_VERSION +
                    ": \"" + myProperties.get(Cartridge_Name) + "\"";
+#else
+    const string& title = "";
+#endif
     fbstatus = myOSystem->frameBuffer().initialize(title,
                  myTIA->width() << 1, myTIA->height());
     if(fbstatus != kSuccess)
@@ -421,9 +480,11 @@ FBInitStatus Console::initializeVideo(bool full)
     setColorLossPalette();
   }
 
+#ifndef TARGET_GNW
   bool enable = myProperties.get(Display_Phosphor) == "YES";
   int blend = atoi(myProperties.get(Display_PPBlend).c_str());
   myOSystem->frameBuffer().enablePhosphor(enable, blend);
+#endif
 
 #ifndef TARGET_GNW
   setPalette(myOSystem->settings().getString("palette"));
@@ -561,9 +622,17 @@ void Console::changeHeight(int direction)
 void Console::setTIAProperties()
 {
   // TODO - query these values directly from the TIA if value is 'AUTO'
+#ifndef TARGET_GNW
   uInt32 ystart = atoi(myProperties.get(Display_YStart).c_str());
+#else
+  uInt8 ystart = a2600_y_offset;
+#endif
   if(ystart > 64) ystart = 64;
+#ifndef TARGET_GNW
   uInt32 height = atoi(myProperties.get(Display_Height).c_str());
+#else
+  uInt16 height = a2600_height;
+#endif
   if(height < 210)      height = 210;
   else if(height > 256) height = 256;
 
@@ -605,8 +674,13 @@ void Console::setControllers(const string& rommd5)
   delete myControllers[1];
 
   // Setup the controllers based on properties
+#ifndef TARGET_GNW
   const string& left  = myProperties.get(Controller_Left);
   const string& right = myProperties.get(Controller_Right);
+#else
+  const string& left  = a2600_control;
+  const string& right = "";
+#endif
 
   // Check for CompuMate controllers; they are special in that a handler
   // creates them for us, and also that they must be used in both ports
@@ -619,10 +693,15 @@ void Console::setControllers(const string& rommd5)
     myControllers[1] = myCMHandler->rightController();
     return;
   }
+#endif
 
   // Swap the ports if necessary
   int leftPort, rightPort;
+#ifndef TARGET_GNW
   if(myProperties.get(Console_SwapPorts) == "NO")
+#else
+  if(!a2600_control_swap)
+#endif
   {
     leftPort = 0; rightPort = 1;
   }
@@ -630,13 +709,13 @@ void Console::setControllers(const string& rommd5)
   {
     leftPort = 1; rightPort = 0;
   }
-#else
-  int leftPort = 0;
-  int rightPort = 1;
-#endif
 
   // Also check if we should swap the paddles plugged into a jack
+#ifndef TARGET_GNW
   bool swapPaddles = myProperties.get(Controller_SwapPaddles) == "YES";
+#else
+  bool swapPaddles = a2600_swap_paddle;
+#endif
 
   // Construct left controller
   if(left == "BOOSTERGRIP")
@@ -767,9 +846,9 @@ void Console::setControllers(const string& rommd5)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef TARGET_GNW
 void Console::loadUserPalette()
 {
-#ifndef TARGET_GNW
   const string& palette = myOSystem->paletteFile();
   ifstream in(palette.c_str(), ios::binary);
   if(!in)
@@ -821,8 +900,8 @@ void Console::loadUserPalette()
 
   in.close();
   myUserPaletteDefined = true;
-#endif
 }
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::setColorLossPalette()

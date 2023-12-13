@@ -23,6 +23,10 @@
 #include "System.hxx"
 #include "CartAR.hxx"
 
+#ifdef TARGET_GNW
+extern bool a2600_fastscbios;
+#endif
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CartridgeAR::CartridgeAR(const uInt8* image, uInt32 size,
                          const Settings& settings)
@@ -336,7 +340,11 @@ void CartridgeAR::initializeROM()
   // The scrom.asm code checks a value at offset 109 as follows:
   //   0xFF -> do a complete jump over the SC BIOS progress bars code
   //   0x00 -> show SC BIOS progress bars as normal
+#ifndef TARGET_GNW
   ourDummyROMCode[109] = mySettings.getBool("fastscbios") ? 0xFF : 0x00;
+#else
+  ourDummyROMCode[109] = a2600_fastscbios ? 0xFF : 0x00;
+#endif
 
   // The accumulator should contain a random value after exiting the
   // SC BIOS code - a value placed in offset 281 will be stored in A

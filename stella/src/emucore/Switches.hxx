@@ -46,8 +46,11 @@ class Switches : public Serializable
 
       @param event The event object to use for events
     */
+#ifndef TARGET_GNW
     Switches(const Event& event, const Properties& properties);
- 
+#else
+    Switches(const Event& event);
+#endif 
     /**
       Destructor
     */

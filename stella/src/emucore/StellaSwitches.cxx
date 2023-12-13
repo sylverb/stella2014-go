@@ -20,22 +20,36 @@
 #include "Event.hxx"
 #include "Props.hxx"
 #include "Switches.hxx"
+#ifdef TARGET_GNW
+extern uint8_t a2600_difficulty;
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+#ifndef TARGET_GNW
 Switches::Switches(const Event& event, const Properties& properties)
+#else
+Switches::Switches(const Event& event)
+#endif
   : myEvent(event),
     mySwitches(0xFF)
 {
+#ifndef TARGET_GNW
   if(properties.get(Console_RightDifficulty) == "B")
   {
     mySwitches &= ~0x80;
   }
   else
+#endif
   {
     mySwitches |= 0x80;
   }
 
+// TODO Sylver : use global variable for difficulty setting
+#ifndef TARGET_GNW
   if(properties.get(Console_LeftDifficulty) == "B")
+#else
+  if (a2600_difficulty == 1)
+#endif
   {
     mySwitches &= ~0x40;
   }
@@ -44,6 +58,7 @@ Switches::Switches(const Event& event, const Properties& properties)
     mySwitches |= 0x40;
   }
 
+#ifndef TARGET_GNW
   if(properties.get(Console_TelevisionType) == "COLOR")
   {
     mySwitches |= 0x08;
@@ -52,6 +67,9 @@ Switches::Switches(const Event& event, const Properties& properties)
   {
     mySwitches &= ~0x08;
   }
+#else
+    mySwitches |= 0x08;
+#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

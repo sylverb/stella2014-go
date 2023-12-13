@@ -86,9 +86,12 @@ Cartridge* Cartridge::create(const uInt8* image, uInt32 size, string& md5,
     type       = detected;
   }
 #else
-  const string& detected = autodetectType(image, size);
-  autodetect = "*";
-  type       = detected;
+  if(type == "AUTO")
+  {
+    const string& detected = autodetectType(image, size);
+    autodetect = "*";
+    type       = detected;
+  }
 #endif
 
 #ifndef TARGET_GNW

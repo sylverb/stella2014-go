@@ -259,6 +259,7 @@ void Paddles::update()
   // we only process the first one we see (when it differs from
   // previous values by a pre-defined amount)
   // Otherwise, it would always override input from digital and mouse
+#ifndef TARGET_GNW
   bool sa_changed = false;
   int sa_xaxis = myEvent.get(myP0AxisValue);
   int sa_yaxis = myEvent.get(myP1AxisValue);
@@ -321,6 +322,7 @@ void Paddles::update()
         myDigitalPinState[ourButtonPin[myMPaddleIDY]] = false;
     }
   }
+#endif
 
   // Finally, consider digital input, where movement happens
   // until a digital event is released

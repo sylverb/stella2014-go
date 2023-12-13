@@ -31,7 +31,9 @@ class CompuMate;
 
 #include "bspf.hxx"
 #include "Control.hxx"
+#ifndef TARGET_GNW
 #include "Props.hxx"
+#endif
 #include "TIATables.hxx"
 #include "FrameBuffer.hxx"
 #include "Serializable.hxx"
@@ -67,8 +69,11 @@ class Console : public Serializable
       @param cart     The cartridge to use with this console
       @param props    The properties for the cartridge  
     */
+#ifndef TARGET_GNW
     Console(OSystem* osystem, Cartridge* cart, const Properties& props);
-
+#else
+    Console(OSystem* osystem, Cartridge* cart);
+#endif
     /**
       Create a new console object by copying another one
 
@@ -104,7 +109,9 @@ class Console : public Serializable
 
       @return The properties being used by the game
     */
+#ifndef TARGET_GNW
     const Properties& properties() const { return myProperties; }
+#endif
 
     /**
       Get the console switches
@@ -170,7 +177,9 @@ class Console : public Serializable
 
       @param The properties to use for the current game
     */
+#ifndef TARGET_GNW
     void setProperties(const Properties& props);
+#endif
 
     /**
       Query detailed information about this console.
@@ -202,7 +211,9 @@ class Console : public Serializable
 
       @param direction +1 indicates increase, -1 indicates decrease.
     */
+#ifndef TARGET_GNW
     void toggleFormat(int direction = 1);
+#endif
 
     /**
       Toggle between the available palettes.
@@ -219,7 +230,9 @@ class Console : public Serializable
     /**
       Toggles phosphor effect.
     */
+#ifndef TARGET_GNW
     void togglePhosphor();
+#endif
 
     /**
       Toggles the PAL color-loss effect.
@@ -325,7 +338,9 @@ class Console : public Serializable
       Loads a user-defined palette file (from OSystem::paletteFile), filling the
       appropriate user-defined palette arrays.
     */
+#ifndef TARGET_GNW
     void loadUserPalette();
+#endif
 
     /**
       Loads all defined palettes with PAL color-loss data, even those that
@@ -344,8 +359,10 @@ class Console : public Serializable
     // Reference to the event object to use
     Event& myEvent;
 
+#ifndef TARGET_GNW
     // Properties for the game
     Properties myProperties;
+#endif
 
     // Pointers to the left and right controllers
     Controller* myControllers[2];
