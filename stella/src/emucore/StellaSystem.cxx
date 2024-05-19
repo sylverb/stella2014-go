@@ -234,17 +234,6 @@ void System::poke(uInt16 addr, uInt8 value)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 System::getAccessFlags(uInt16 addr)
-{
-  return 0;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void System::setAccessFlags(uInt16 addr, uInt8 flags)
-{
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void System::lockDataBus()
 {
   myDataBusLocked = true;

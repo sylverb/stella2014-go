@@ -37,8 +37,7 @@
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 StateManager::StateManager(OSystem* osystem)
-  : myOSystem(osystem),
-    myCurrentSlot(0)
+  : myOSystem(osystem)
 {
   reset();
 }

@@ -47,8 +47,6 @@ CartridgeAR::CartridgeAR(const uInt8* image, uInt32 size,
   // through a pointer, since the AR scheme doesn't support bankswitching
   // in the normal sense
   //
-  // Instead, access will be through the getAccessFlags and setAccessFlags
-  // methods below
   createCodeAccessBase(mySize);
 }
 
@@ -219,20 +217,6 @@ bool CartridgeAR::poke(uInt16 addr, uInt8)
   }
 
   return modified;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-uInt8 CartridgeAR::getAccessFlags(uInt16 address)
-{
-  return myCodeAccessBase[(address & 0x07FF) +
-           myImageOffset[(address & 0x0800) ? 1 : 0]];
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CartridgeAR::setAccessFlags(uInt16 address, uInt8 flags)
-{
-  myCodeAccessBase[(address & 0x07FF) +
-    myImageOffset[(address & 0x0800) ? 1 : 0]] |= flags;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
