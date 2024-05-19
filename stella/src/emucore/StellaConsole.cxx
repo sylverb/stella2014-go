@@ -465,16 +465,6 @@ FBInitStatus Console::initializeVideo(bool full)
 
   if(full)
   {
-#ifndef TARGET_GNW
-    const string& title = string("Stella ") + STELLA_VERSION +
-                   ": \"" + myProperties.get(Cartridge_Name) + "\"";
-#else
-    const string& title = "";
-#endif
-    fbstatus = myOSystem->frameBuffer().initialize(title,
-                 myTIA->width() << 1, myTIA->height());
-    if(fbstatus != kSuccess)
-      return fbstatus;
     setColorLossPalette();
   }
 
