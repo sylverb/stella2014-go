@@ -501,7 +501,6 @@ void Console::initializeAudio()
 #else
   myOSystem->sound().setChannels(1);
 #endif
-  myOSystem->sound().setFrameRate(myFramerate);
   myOSystem->sound().open();
 
   // Make sure auto-frame calculation is only enabled when necessary
@@ -922,9 +921,6 @@ void Console::setColorLossPalette()
 void Console::setFramerate(float framerate)
 {
   myFramerate = framerate;
-#ifndef TARGET_GNW
-  myOSystem->sound().setFrameRate(framerate);
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

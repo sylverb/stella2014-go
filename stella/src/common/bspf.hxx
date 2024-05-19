@@ -55,8 +55,6 @@ typedef uint64_t uInt64;
 #include <cstring>
 using namespace std;
 
-static const string EmptyString("");
-
 //////////////////////////////////////////////////////////////////////
 // Some convenience functions
 
