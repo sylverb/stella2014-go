@@ -445,8 +445,6 @@ void Console::togglePhosphor()
     myProperties.set(Display_Phosphor, "Yes");
     enable = true;
   }
-
-  myOSystem->frameBuffer().enablePhosphor(enable, blend);
 }
 #endif
 
@@ -461,12 +459,8 @@ void Console::setProperties(const Properties& props)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FBInitStatus Console::initializeVideo(bool full)
 {
-  FBInitStatus fbstatus = kSuccess;
-
   if(full)
-  {
     setColorLossPalette();
-  }
 
 #ifndef TARGET_GNW
   bool enable = myProperties.get(Display_Phosphor) == "YES";
@@ -480,7 +474,7 @@ FBInitStatus Console::initializeVideo(bool full)
   setPalette("standard");
 #endif
 
-  return fbstatus;
+  return kSuccess;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -502,9 +496,6 @@ void Console::initializeAudio()
   myOSystem->sound().setChannels(1);
 #endif
   myOSystem->sound().open();
-
-  // Make sure auto-frame calculation is only enabled when necessary
-  //myTIA->enableAutoFrame(framerate <= 0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -957,11 +948,6 @@ void Console::toggleHMOVE() const
 void Console::toggleFixedColors() const
 {
   myTIA->toggleFixedColors();
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Console::addDebugger()
-{
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
