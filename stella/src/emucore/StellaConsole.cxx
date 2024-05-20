@@ -59,8 +59,6 @@ extern bool a2600_fastscbios;
 #include "TrackBall.hxx"
 #include "FrameBuffer.hxx"
 #include "OSystem.hxx"
-//#include "Menu.hxx"
-//#include "CommandMenu.hxx"
 #include "Serializable.hxx"
 #include "Version.hxx"
 
