@@ -264,8 +264,6 @@ bool TIA::save(Serializer& out) const
 {
   const string& device = name();
 
-  try
-  {
     out.putString(device);
 
     out.putInt(myClockWhenFrameStarted);
@@ -352,11 +350,6 @@ bool TIA::save(Serializer& out) const
 
     // Save the sound sample stuff ...
     mySound.save(out);
-  }
-  catch(...)
-  {
-    return false;
-  }
 
   return true;
 }
@@ -366,159 +359,99 @@ bool TIA::load(Serializer& in)
 {
   const string& device = name();
 
-  try
-  {
-    if(in.getString() != device)
-      return false;
-
-    myClockWhenFrameStarted = (Int32) in.getInt();
-    myClockStartDisplay = (Int32) in.getInt();
-    myClockStopDisplay = (Int32) in.getInt();
-    myClockAtLastUpdate = (Int32) in.getInt();
-    myClocksToEndOfScanLine = (Int32) in.getInt();
-    myScanlineCountForLastFrame = in.getInt();
-    myVSYNCFinishClock = (Int32) in.getInt();
-
-    myEnabledObjects = in.getByte();
-    myDisabledObjects = in.getByte();
-
-    myVSYNC = in.getByte();
-    myVBLANK = in.getByte();
-    myNUSIZ0 = in.getByte();
-    myNUSIZ1 = in.getByte();
-
-    in.getByteArray(myColor, 8);
-
-    myCTRLPF = in.getByte();
-    myPlayfieldPriorityAndScore = in.getByte();
-    myREFP0 = in.getBool();
-    myREFP1 = in.getBool();
-    myPF = in.getInt();
-    myGRP0 = in.getByte();
-    myGRP1 = in.getByte();
-    myDGRP0 = in.getByte();
-    myDGRP1 = in.getByte();
-    myENAM0 = in.getBool();
-    myENAM1 = in.getBool();
-    myENABL = in.getBool();
-    myDENABL = in.getBool();
-    myHMP0 = in.getByte();
-    myHMP1 = in.getByte();
-    myHMM0 = in.getByte();
-    myHMM1 = in.getByte();
-    myHMBL = in.getByte();
-    myVDELP0 = in.getBool();
-    myVDELP1 = in.getBool();
-    myVDELBL = in.getBool();
-    myRESMP0 = in.getBool();
-    myRESMP1 = in.getBool();
-    myCollision = in.getShort();
-    myCollisionEnabledMask = in.getInt();
-    myCurrentGRP0 = in.getByte();
-    myCurrentGRP1 = in.getByte();
-
-    myDumpEnabled = in.getBool();
-    myDumpDisabledCycle = (Int32) in.getInt();
-
-    myPOSP0 = (Int16) in.getShort();
-    myPOSP1 = (Int16) in.getShort();
-    myPOSM0 = (Int16) in.getShort();
-    myPOSM1 = (Int16) in.getShort();
-    myPOSBL = (Int16) in.getShort();
-
-    myMotionClockP0 = (Int32) in.getInt();
-    myMotionClockP1 = (Int32) in.getInt();
-    myMotionClockM0 = (Int32) in.getInt();
-    myMotionClockM1 = (Int32) in.getInt();
-    myMotionClockBL = (Int32) in.getInt();
-
-    myStartP0 = (Int32) in.getInt();
-    myStartP1 = (Int32) in.getInt();
-    myStartM0 = (Int32) in.getInt();
-    myStartM1 = (Int32) in.getInt();
-
-    mySuppressP0 = in.getByte();
-    mySuppressP1 = in.getByte();
-
-    myHMP0mmr = in.getBool();
-    myHMP1mmr = in.getBool();
-    myHMM0mmr = in.getBool();
-    myHMM1mmr = in.getBool();
-    myHMBLmmr = in.getBool();
-
-    myCurrentHMOVEPos = (Int32) in.getInt();
-    myPreviousHMOVEPos = (Int32) in.getInt();
-    myHMOVEBlankEnabled = in.getBool();
-
-    myFrameCounter = in.getInt();
-    myPALFrameCounter = in.getInt();
-
-    // Load the sound sample stuff ...
-    mySound.load(in);
-
-    // Reset TIA bits to be on
-    enableBits(true);
-    toggleFixedColors(0);
-    myAllowHMOVEBlanks = true;
-  }
-  catch(...)
-  {
+  if(in.getString() != device)
     return false;
-  }
 
+  myClockWhenFrameStarted = (Int32) in.getInt();
+  myClockStartDisplay = (Int32) in.getInt();
+  myClockStopDisplay = (Int32) in.getInt();
+  myClockAtLastUpdate = (Int32) in.getInt();
+  myClocksToEndOfScanLine = (Int32) in.getInt();
+  myScanlineCountForLastFrame = in.getInt();
+  myVSYNCFinishClock = (Int32) in.getInt();
+
+  myEnabledObjects = in.getByte();
+  myDisabledObjects = in.getByte();
+
+  myVSYNC = in.getByte();
+  myVBLANK = in.getByte();
+  myNUSIZ0 = in.getByte();
+  myNUSIZ1 = in.getByte();
+
+  in.getByteArray(myColor, 8);
+
+  myCTRLPF = in.getByte();
+  myPlayfieldPriorityAndScore = in.getByte();
+  myREFP0 = in.getBool();
+  myREFP1 = in.getBool();
+  myPF = in.getInt();
+  myGRP0 = in.getByte();
+  myGRP1 = in.getByte();
+  myDGRP0 = in.getByte();
+  myDGRP1 = in.getByte();
+  myENAM0 = in.getBool();
+  myENAM1 = in.getBool();
+  myENABL = in.getBool();
+  myDENABL = in.getBool();
+  myHMP0 = in.getByte();
+  myHMP1 = in.getByte();
+  myHMM0 = in.getByte();
+  myHMM1 = in.getByte();
+  myHMBL = in.getByte();
+  myVDELP0 = in.getBool();
+  myVDELP1 = in.getBool();
+  myVDELBL = in.getBool();
+  myRESMP0 = in.getBool();
+  myRESMP1 = in.getBool();
+  myCollision = in.getShort();
+  myCollisionEnabledMask = in.getInt();
+  myCurrentGRP0 = in.getByte();
+  myCurrentGRP1 = in.getByte();
+
+  myDumpEnabled = in.getBool();
+  myDumpDisabledCycle = (Int32) in.getInt();
+
+  myPOSP0 = (Int16) in.getShort();
+  myPOSP1 = (Int16) in.getShort();
+  myPOSM0 = (Int16) in.getShort();
+  myPOSM1 = (Int16) in.getShort();
+  myPOSBL = (Int16) in.getShort();
+
+  myMotionClockP0 = (Int32) in.getInt();
+  myMotionClockP1 = (Int32) in.getInt();
+  myMotionClockM0 = (Int32) in.getInt();
+  myMotionClockM1 = (Int32) in.getInt();
+  myMotionClockBL = (Int32) in.getInt();
+
+  myStartP0 = (Int32) in.getInt();
+  myStartP1 = (Int32) in.getInt();
+  myStartM0 = (Int32) in.getInt();
+  myStartM1 = (Int32) in.getInt();
+
+  mySuppressP0 = in.getByte();
+  mySuppressP1 = in.getByte();
+
+  myHMP0mmr = in.getBool();
+  myHMP1mmr = in.getBool();
+  myHMM0mmr = in.getBool();
+  myHMM1mmr = in.getBool();
+  myHMBLmmr = in.getBool();
+
+  myCurrentHMOVEPos = (Int32) in.getInt();
+  myPreviousHMOVEPos = (Int32) in.getInt();
+  myHMOVEBlankEnabled = in.getBool();
+
+  myFrameCounter = in.getInt();
+  myPALFrameCounter = in.getInt();
+
+  // Load the sound sample stuff ...
+  mySound.load(in);
+
+  // Reset TIA bits to be on
+  enableBits(true);
+  toggleFixedColors(0);
+  myAllowHMOVEBlanks = true;
   return true;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool TIA::saveDisplay(Serializer& out) const
-{
-#ifndef TARGET_GNW
-  try
-  {
-    out.putBool(myPartialFrameFlag);
-    out.putInt(myFramePointerClocks);
-    out.putByteArray(myCurrentFrameBuffer, 160*320);
-  }
-  catch(...)
-  {
-    return false;
-  }
-
-  return true;
-#else
-  return true;
-#endif
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool TIA::loadDisplay(Serializer& in)
-{
-#ifndef TARGET_GNW
-  try
-  {
-    myPartialFrameFlag = in.getBool();
-    myFramePointerClocks = in.getInt();
-
-    // Reset frame buffer pointer and data
-    clearBuffers();
-    myFramePointer = myCurrentFrameBuffer;
-    in.getByteArray(myCurrentFrameBuffer, 160*320);
-    memcpy(myPreviousFrameBuffer, myCurrentFrameBuffer, 160*320);
-
-    // If we're in partial frame mode, make sure to re-create the screen
-    // as it existed when the state was saved
-    if(myPartialFrameFlag)
-      myFramePointer += myFramePointerClocks;
-  }
-  catch(...)
-  {
-    return false;
-  }
-
-  return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
