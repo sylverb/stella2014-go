@@ -5,7 +5,6 @@ OSystem::OSystem()
 {
     myNVRamDir     = ".";
     mySettings     = 0;
-    myFrameBuffer  = new FrameBuffer();
     mySound        = new Sound(this);
 #ifndef TARGET_GNW
     mySerialPort   = new SerialPort();
@@ -20,7 +19,6 @@ OSystem::OSystem()
 
 OSystem::~OSystem()
 {
-    delete myFrameBuffer;
     delete mySound;
 #ifndef TARGET_GNW
     delete mySerialPort;
@@ -30,7 +28,6 @@ OSystem::~OSystem()
 }
 
 bool OSystem::create() { return 1; }
-
 void OSystem::stateChanged(EventHandler::State state) { }
 
 uInt64 OSystem::getTicks() const
@@ -38,22 +35,5 @@ uInt64 OSystem::getTicks() const
     return myConsole->tia().getMilliSeconds();
 }
 
-EventHandler::EventHandler(OSystem*)
-{
-    
-}
-
-EventHandler::~EventHandler()
-{
-    
-}
-
-FrameBuffer::FrameBuffer()
-{
-
-}
-
-FrameBuffer::~FrameBuffer()
-{
-
-}
+EventHandler::EventHandler(OSystem*) { }
+EventHandler::~EventHandler() { }

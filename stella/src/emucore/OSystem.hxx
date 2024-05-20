@@ -33,7 +33,7 @@ class Sound;
 class StateManager;
 
 #include "Array.hxx"
-#include "FrameBuffer.hxx"
+#include "EventHandler.hxx"
 #include "bspf.hxx"
 
 /**
@@ -78,13 +78,6 @@ class OSystem
       @return The event handler
     */
     EventHandler& eventHandler() const { return *myEventHandler; }
-
-    /**
-      Get the frame buffer of the system
-
-      @return The frame buffer
-    */
-    FrameBuffer& frameBuffer() const { return *myFrameBuffer; }
 
     /**
       Get the sound object of the system
@@ -198,9 +191,6 @@ class OSystem
   protected:
     // Pointer to the EventHandler object
     EventHandler* myEventHandler;
-
-    // Pointer to the FrameBuffer object
-    FrameBuffer* myFrameBuffer;
 
     // Pointer to the Sound object
     Sound* mySound;

@@ -23,7 +23,6 @@
 #include <cmath>
 
 #include "TIASnd.hxx"
-#include "FrameBuffer.hxx"
 #ifndef TARGET_GNW
 #include "Settings.hxx"
 #endif

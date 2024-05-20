@@ -57,7 +57,6 @@ extern bool a2600_fastscbios;
 #include "System.hxx"
 #include "TIA.hxx"
 #include "TrackBall.hxx"
-#include "FrameBuffer.hxx"
 #include "OSystem.hxx"
 #include "Serializable.hxx"
 #include "Version.hxx"
@@ -435,24 +434,15 @@ void Console::setProperties(const Properties& props)
 #endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FBInitStatus Console::initializeVideo(bool full)
+void Console::initializeVideo()
 {
-  if(full)
-    setColorLossPalette();
-
-#ifndef TARGET_GNW
-  bool enable = myProperties.get(Display_Phosphor) == "YES";
-  int blend = atoi(myProperties.get(Display_PPBlend).c_str());
-  myOSystem->frameBuffer().enablePhosphor(enable, blend);
-#endif
+  setColorLossPalette();
 
 #ifndef TARGET_GNW
   setPalette(myOSystem->settings().getString("palette"));
 #else
   setPalette("standard");
 #endif
-
-  return kSuccess;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
