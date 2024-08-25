@@ -56,7 +56,7 @@ def main():
     md5 = hashlib.md5(romFile.read()).hexdigest()
     romFile.close()
 
-    databasePath = './stella2014-go/stella/src/emucore/DefProps.hxx'
+    databasePath = './external/stella2014-go/stella/src/emucore/DefProps.hxx'
     with open(databasePath, 'r') as file:
         data = [re.findall('"([^"]*)"', line) for line in file]
 

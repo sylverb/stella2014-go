@@ -31,6 +31,7 @@
 #include "KidVid.hxx"
 #include "CompuMate.hxx"
 #else
+#include "main.h"
 extern uInt8 a2600_y_offset;
 extern uInt16 a2600_height;
 extern char a2600_control[];
@@ -161,8 +162,12 @@ Console::Console(OSystem* osystem, Cartridge* cart)
     a2600_fastscbios = true;
 #endif
     mySystem->reset(true);  // autodetect in reset enabled
-    for(int i = 0; i < 60; ++i)
+    for(int i = 0; i < 60; ++i) {
+#if defined(TARGET_GNW) && !defined(LINUX_EMU)
+      wdog_refresh();
+#endif
       myTIA->update();
+    }
     myDisplayFormat = myTIA->isPAL() ? "PAL" : "NTSC";
 #ifndef TARGET_GNW
     if(myProperties.get(Display_Format) == "AUTO")
@@ -584,6 +589,8 @@ void Console::changeYStart(int direction)
   ostringstream val;
   val << ystart;
   myProperties.set(Display_YStart, val.str());
+#else
+  a2600_y_offset = ystart;
 #endif
 }
 
