@@ -17,164 +17,112 @@
 // $Id: Serializer.cxx 2838 2014-01-17 23:34:03Z stephena $
 //============================================================================
 
-#ifndef TARGET_GNW
-#include <fstream>
-#endif
-
 #include "Serializer.hxx"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::Serializer(const string& filename, bool readonly)
-  : myStream(NULL),
-    myUseFilestream(true)
+  : myFile(NULL),
+    myReadOnly(readonly)
 {
-#ifndef TARGET_GNW
   if(readonly)
   {
-    //FilesystemNode node(filename);
-    //if(node.isFile() && node.isReadable())
-    {
-      fstream* str = new fstream(filename.c_str(), ios::in | ios::binary);
-      if(str && str->is_open())
-      {
-        myStream = str;
-        myStream->exceptions( ios_base::failbit | ios_base::badbit | ios_base::eofbit );
-        reset();
-      }
-      else
-        delete str;
-    }
+    myFile = fopen(filename.c_str(), "rb");
   }
   else
   {
-    // When using fstreams, we need to manually create the file first
-    // if we want to use it in read/write mode, since it won't be created
-    // if it doesn't already exist
-    // However, if it *does* exist, we don't want to overwrite it
-    // So we open in write and append mode - the write creates the file
-    // when necessary, and the append doesn't delete any data if it
-    // already exists
-    fstream temp(filename.c_str(), ios::out | ios::app);
-    temp.close();
-
-    fstream* str = new fstream(filename.c_str(), ios::in | ios::out | ios::binary);
-    if(str && str->is_open())
+    // Open in read/write mode, create if doesn't exist
+    myFile = fopen(filename.c_str(), "rb+");
+    if(!myFile)
     {
-      myStream = str;
-      myStream->exceptions( ios_base::failbit | ios_base::badbit | ios_base::eofbit );
-      reset();
+      // If file doesn't exist, create it
+      myFile = fopen(filename.c_str(), "wb+");
     }
-    else
-      delete str;
   }
-#endif
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Serializer::Serializer(void)
-  : myStream(NULL),
-    myUseFilestream(false)
-{
-#ifndef TARGET_GNW
-  myStream = new stringstream(ios::in | ios::out | ios::binary);
-  
-  // For some reason, Windows and possibly OSX needs to store something in
-  // the stream before it is used for the first time
-  if(myStream)
-  {
-    myStream->exceptions( ios_base::failbit | ios_base::badbit | ios_base::eofbit );
-    putBool(true);
-    reset();
-  }
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Serializer::~Serializer(void)
 {
-#ifndef TARGET_GNW
-  if(myStream != NULL)
+  if(myFile)
   {
-    if(myUseFilestream)
-      ((fstream*)myStream)->close();
-
-    delete myStream;
-    myStream = NULL;
+    fclose(myFile);
+    myFile = NULL;
   }
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Serializer::isValid(void)
 {
-  return myStream != NULL;
+  return myFile != NULL;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::reset(void)
 {
-#ifndef TARGET_GNW
-  myStream->clear();
-  myStream->seekg(ios_base::beg);
-  myStream->seekp(ios_base::beg);
-#endif
+  if(myFile)
+  {
+    rewind(myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt8 Serializer::getByte(void)
 {
-  char buf;
-#ifndef TARGET_GNW
-  myStream->read(&buf, 1);
-#endif
-
-  return buf;
+  uInt8 val = 0;
+  if(myFile)
+  {
+    fread(&val, 1, 1, myFile);
+  }
+  return val;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::getByteArray(uInt8* array, uInt32 size)
 {
-#ifndef TARGET_GNW
-  myStream->read((char*)array, size);
-#endif
+  if(myFile)
+  {
+    fread(array, 1, size, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt16 Serializer::getShort(void)
 {
   uInt16 val = 0;
-#ifndef TARGET_GNW
-  myStream->read((char*)&val, sizeof(uInt16));
-#endif
-
+  if(myFile)
+  {
+    fread(&val, sizeof(uInt16), 1, myFile);
+  }
   return val;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::getShortArray(uInt16* array, uInt32 size)
 {
-#ifndef TARGET_GNW
-  myStream->read((char*)array, sizeof(uInt16)*size);
-#endif
+  if(myFile)
+  {
+    fread(array, sizeof(uInt16), size, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 uInt32 Serializer::getInt(void)
 {
   uInt32 val = 0;
-#ifndef TARGET_GNW
-  myStream->read((char*)&val, sizeof(uInt32));
-#endif
-
+  if(myFile)
+  {
+    fread(&val, sizeof(uInt32), 1, myFile);
+  }
   return val;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::getIntArray(uInt32* array, uInt32 size)
 {
-#ifndef TARGET_GNW
-  myStream->read((char*)array, sizeof(uInt32)*size);
-#endif
+  if(myFile)
+  {
+    fread(array, sizeof(uInt32), size, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -183,79 +131,85 @@ string Serializer::getString(void)
   int len = getInt();
   string str;
   str.resize(len);
-#ifndef TARGET_GNW
-  myStream->read(&str[0], len);
-#endif
-
+  if(myFile)
+  {
+    fread(&str[0], 1, len, myFile);
+  }
   return str;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Serializer::getBool(void)
 {
-#ifndef TARGET_GNW
   return getByte() == TruePattern;
-#else
-  return false;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putByte(uInt8 value)
 {
-#ifndef TARGET_GNW
-  myStream->write((char*)&value, 1);
-#endif
+  if(myFile && !myReadOnly)
+  {
+    fwrite(&value, 1, 1, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putByteArray(const uInt8* array, uInt32 size)
 {
-#ifndef TARGET_GNW
-  myStream->write((char*)array, size);
-#endif
+  if(myFile && !myReadOnly)
+  {
+    fwrite(array, 1, size, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putShort(uInt16 value)
 {
-#ifndef TARGET_GNW
-  myStream->write((char*)&value, sizeof(uInt16));
-#endif
+  if(myFile && !myReadOnly)
+  {
+    fwrite(&value, sizeof(uInt16), 1, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putShortArray(const uInt16* array, uInt32 size)
 {
-#ifndef TARGET_GNW
-  myStream->write((char*)array, sizeof(uInt16)*size);
-#endif
+  if(myFile && !myReadOnly)
+  {
+    fwrite(array, sizeof(uInt16), size, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putInt(uInt32 value)
 {
-#ifndef TARGET_GNW
-  myStream->write((char*)&value, sizeof(uInt32));
-#endif
+  if(myFile && !myReadOnly)
+  {
+    fwrite(&value, sizeof(uInt32), 1, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putIntArray(const uInt32* array, uInt32 size)
 {
-#ifndef TARGET_GNW
-  myStream->write((char*)array, sizeof(uInt32)*size);
-#endif
+  if(myFile && !myReadOnly)
+  {
+    fwrite(array, sizeof(uInt32), size, myFile);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Serializer::putString(const string& str)
 {
-  int len = str.length();
-  putInt(len);
-#ifndef TARGET_GNW
-  myStream->write(str.data(), len);
-#endif
+  if(!myReadOnly)
+  {
+    uInt32 len = str.length();
+    putInt(len);
+    if(myFile)
+    {
+      fwrite(str.data(), 1, len, myFile);
+    }
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

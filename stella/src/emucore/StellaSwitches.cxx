@@ -44,7 +44,6 @@ Switches::Switches(const Event& event)
     mySwitches |= 0x80;
   }
 
-// TODO Sylver : use global variable for difficulty setting
 #ifndef TARGET_GNW
   if(properties.get(Console_LeftDifficulty) == "B")
 #else
@@ -129,7 +128,6 @@ void Switches::update()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool Switches::save(Serializer& out) const
 {
-#ifndef TARGET_GNW
   try
   {
     out.putByte(mySwitches);
@@ -139,15 +137,11 @@ bool Switches::save(Serializer& out) const
     return false;
   }
   return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool Switches::load(Serializer& in)
 {
-#ifndef TARGET_GNW
   try
   {
     mySwitches = in.getByte();
@@ -157,7 +151,4 @@ bool Switches::load(Serializer& in)
     return false;
   }
   return true;
-#else
-  return true;
-#endif
 }

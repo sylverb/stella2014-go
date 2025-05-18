@@ -241,7 +241,6 @@ bool M6502::save(Serializer& out) const
 {
   const string& CPU = name();
 
-#ifndef TARGET_GNW
   try
   {
     out.putString(CPU);
@@ -281,9 +280,6 @@ bool M6502::save(Serializer& out) const
   }
 
   return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -291,7 +287,6 @@ bool M6502::load(Serializer& in)
 {
   const string& CPU = name();
 
-#ifndef TARGET_GNW
   try
   {
     if(in.getString() != CPU)
@@ -332,9 +327,6 @@ bool M6502::load(Serializer& in)
   }
 
   return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

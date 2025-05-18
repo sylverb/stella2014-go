@@ -332,7 +332,6 @@ void M6532::setPinState(bool swcha)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6532::save(Serializer& out) const
 {
-#ifndef TARGET_GNW
   try
   {
     out.putString(name());
@@ -359,15 +358,11 @@ bool M6532::save(Serializer& out) const
   }
 
   return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool M6532::load(Serializer& in)
 {
-#ifndef TARGET_GNW
   try
   {
     if(in.getString() != name())
@@ -395,9 +390,6 @@ bool M6532::load(Serializer& in)
   }
 
   return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

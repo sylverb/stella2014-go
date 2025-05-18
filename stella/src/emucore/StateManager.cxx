@@ -56,7 +56,6 @@ void StateManager::update()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool StateManager::loadState(Serializer& in)
 {
-#ifndef TARGET_GNW
   if(&myOSystem->console())
   {
     // Make sure the file can be opened for reading
@@ -67,18 +66,16 @@ bool StateManager::loadState(Serializer& in)
       return in.getString() == STATE_HEADER &&
              in.getString() == myOSystem->console().cartridge().name() &&
              myOSystem->console().load(in);
+    } else {
+      printf("StateManager::loadState: invalid serializer\n");
     }
   }
   return false;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool StateManager::saveState(Serializer& out)
 {
-#ifndef TARGET_GNW
   try
   {
     if(&myOSystem->console())
@@ -103,9 +100,6 @@ bool StateManager::saveState(Serializer& out)
   {
   }
   return false;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

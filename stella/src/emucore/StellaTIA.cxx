@@ -265,7 +265,6 @@ bool TIA::save(Serializer& out) const
 {
   const string& device = name();
 
-#ifndef TARGET_GNW
   try
   {
     out.putString(device);
@@ -361,9 +360,6 @@ bool TIA::save(Serializer& out) const
   }
 
   return true;
-#else
-  return false;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -371,7 +367,6 @@ bool TIA::load(Serializer& in)
 {
   const string& device = name();
 
-#ifndef TARGET_GNW
   try
   {
     if(in.getString() != device)
@@ -473,9 +468,6 @@ bool TIA::load(Serializer& in)
   }
 
   return true;
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

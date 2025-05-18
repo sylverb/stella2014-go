@@ -20,16 +20,12 @@
 #ifndef SERIALIZER_HXX
 #define SERIALIZER_HXX
 
-#ifndef TARGET_GNW
-#include <iostream>
-#include <sstream>
-#endif
+#include <stdio.h>
 #include "bspf.hxx"
 
 /**
   This class implements a Serializer device, whereby data is serialized and
-  read from/written to a binary stream in a system-independent way.  The
-  stream can be either an actual file, or an in-memory structure.
+  read from/written to a binary stream in a system-independent way.
 
   Bytes are written as characters, shorts as 2 characters (16-bits),
   integers as 4 characters (32-bits), strings are written as characters
@@ -47,9 +43,7 @@ class Serializer
   public:
     /**
       Creates a new Serializer device for streaming binary data.
-
-      If a filename is provided, the stream will be to the given
-      filename.  Otherwise, the stream will be in memory.
+      The stream will be to the given filename.
 
       If a file is opened readonly, we can never write to it.
 
@@ -57,7 +51,6 @@ class Serializer
       was correctly initialized.
     */
     Serializer(const string& filename, bool readonly = false);
-    Serializer(void);
 
     /**
       Destructor
@@ -90,7 +83,6 @@ class Serializer
       @param size   The size of the array (number of bytes to read)
     */
     void getByteArray(uInt8* array, uInt32 size);
-
 
     /**
       Reads a short value (unsigned 16-bit) from the current input stream.
@@ -195,28 +187,10 @@ class Serializer
     */
     void putBool(bool b);
 
-    std::string get()
-    {
-#ifndef TARGET_GNW
-        stringstream *s = (stringstream*)myStream;
-        return s->str();
-#else
-        return "";
-#endif
-    }
-
-    void set(const std::string &data)
-    {
-#ifndef TARGET_GNW
-        stringstream *s = (stringstream*)myStream;
-        s->str(data);
-#endif
-    }
-
   private:
-    // The stream to send the serialized data to.
-    iostream* myStream;
-    bool myUseFilestream;
+    // The file handle for file operations
+    FILE* myFile;
+    bool myReadOnly;
 
     enum {
       TruePattern  = 0xfe,

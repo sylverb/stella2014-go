@@ -253,7 +253,6 @@ Console::~Console()
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Console::save(Serializer& out) const
 {
-#ifndef TARGET_GNW
   try
   {
     // First save state for the system
@@ -271,15 +270,11 @@ bool Console::save(Serializer& out) const
   }
 
   return true;  // success
-#else
-  return true;
-#endif
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool Console::load(Serializer& in)
 {
-#ifndef TARGET_GNW
   try
   {
     // First load state for the system
@@ -297,9 +292,6 @@ bool Console::load(Serializer& in)
   }
 
   return true;  // success
-#else
-  return true;
-#endif
 }
 
 #ifndef TARGET_GNW
