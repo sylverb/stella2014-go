@@ -8,7 +8,8 @@ property_type = [
     "mapper", # Cartridge_Type
     "difficulty", # Console_LeftDifficulty
     "control_swap", # Console_SwapPorts
-    "control", # Controller_Left
+    "controll", # Controller_Left
+    "controlr", # Controller_Right
     "paddle_swap", # Controller_SwapPaddles
     "region", # Display_Format
     "yoffset", # Display_YStart
@@ -20,7 +21,8 @@ FIELD_LENGTHS = {
     "mapper": 8,
     "difficulty": 32,
     "control_swap": 8,
-    "control": 32,
+    "controll": 32,
+    "controlr": 32,
     "paddle_swap": 8,
     "region": 16,
     "yoffset": 8,
@@ -45,14 +47,15 @@ def parse_defprops(filename):
             # Only keep the MD5 and the properties we need
             data.append([
                 entry.group(1),  # MD5
-                entry.group(7),  # mapper
-                entry.group(8),  # difficulty
-                entry.group(11), # control_swap
-                entry.group(12), # control
-                entry.group(14), # paddle_swap
-                entry.group(16), # region
-                entry.group(17), # yoffset
-                entry.group(18)  # height
+                entry.group(8),  # mapper
+                entry.group(9),  # difficulty
+                entry.group(12), # control_swap
+                entry.group(13), # controll
+                entry.group(14), # controlr
+                entry.group(15), # paddle_swap
+                entry.group(17), # region
+                entry.group(18), # yoffset
+                entry.group(19)  # height
             ])
             
     return data

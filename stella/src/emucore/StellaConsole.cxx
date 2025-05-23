@@ -34,7 +34,8 @@
 #include "main.h"
 extern uInt8 a2600_y_offset;
 extern uInt16 a2600_height;
-extern char a2600_control[];
+extern char a2600_controll[];
+extern char a2600_controlr[];
 extern bool a2600_control_swap;
 extern bool a2600_swap_paddle;
 extern char a2600_display_mode[];
@@ -677,8 +678,8 @@ void Console::setControllers(const string& rommd5)
   const string& left  = myProperties.get(Controller_Left);
   const string& right = myProperties.get(Controller_Right);
 #else
-  const string& left  = a2600_control;
-  const string& right = "";
+  const string& left  = a2600_controll;
+  const string& right = a2600_controlr;
 #endif
 
   // Check for CompuMate controllers; they are special in that a handler

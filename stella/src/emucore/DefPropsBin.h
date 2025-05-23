@@ -10,7 +10,8 @@
 #define MAPPER_LENGTH 8
 #define DIFFICULTY_LENGTH 32
 #define CONTROL_SWAP_LENGTH 8
-#define CONTROL_LENGTH 32
+#define CONTROL_LENGTHL 32
+#define CONTROL_LENGTHR 32
 #define PADDLE_SWAP_LENGTH 8
 #define REGION_LENGTH 16
 #define YOFFSET_LENGTH 8
@@ -21,7 +22,8 @@ typedef struct {
     char mapper[MAPPER_LENGTH];
     char difficulty[DIFFICULTY_LENGTH];
     char control_swap[CONTROL_SWAP_LENGTH];
-    char control[CONTROL_LENGTH];
+    char control_left[CONTROL_LENGTHL];
+    char control_right[CONTROL_LENGTHR];
     char paddle_swap[PADDLE_SWAP_LENGTH];
     char region[REGION_LENGTH];
     char yoffset[YOFFSET_LENGTH];

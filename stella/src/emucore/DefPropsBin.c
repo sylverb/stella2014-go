@@ -89,7 +89,8 @@ bool defprops_get_properties(const char* md5, rom_properties_t* props) {
             if (!read_fixed_string(props->mapper, sizeof(props->mapper), MAPPER_LENGTH) ||
                 !read_fixed_string(props->difficulty, sizeof(props->difficulty), DIFFICULTY_LENGTH) ||
                 !read_fixed_string(props->control_swap, sizeof(props->control_swap), CONTROL_SWAP_LENGTH) ||
-                !read_fixed_string(props->control, sizeof(props->control), CONTROL_LENGTH) ||
+                !read_fixed_string(props->control_left, sizeof(props->control_left), CONTROL_LENGTHL) ||
+                !read_fixed_string(props->control_right, sizeof(props->control_right), CONTROL_LENGTHR) ||
                 !read_fixed_string(props->paddle_swap, sizeof(props->paddle_swap), PADDLE_SWAP_LENGTH) ||
                 !read_fixed_string(props->region, sizeof(props->region), REGION_LENGTH) ||
                 !read_fixed_string(props->yoffset, sizeof(props->yoffset), YOFFSET_LENGTH) ||
