@@ -257,7 +257,9 @@ class Console : public Serializable
 
       @param direction +1 indicates increase, -1 indicates decrease.
     */
+#ifndef TARGET_GNW
     void changeHeight(int direction);
+#endif
 
     /**
       Sets the framerate of the console, which in turn communicates

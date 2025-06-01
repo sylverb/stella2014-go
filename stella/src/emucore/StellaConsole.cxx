@@ -511,6 +511,7 @@ void Console::changeYStart(int direction)
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+#ifndef TARGET_GNW
 void Console::changeHeight(int direction)
 {
   uInt32 height = myTIA->height();
@@ -534,12 +535,11 @@ void Console::changeHeight(int direction)
   myTIA->frameReset();
   initializeVideo();  // takes care of refreshing the screen
 
-#ifndef TARGET_GNW
   ostringstream val;
   val << height;
   myProperties.set(Display_Height, val.str());
-#endif
 }
+#endif
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Console::setTIAProperties()
@@ -563,13 +563,21 @@ void Console::setTIAProperties()
      myDisplayFormat == "SECAM60")
   {
     // Assume we've got ~262 scanlines (NTSC-like format)
+#ifdef TARGET_GNW
+    myFramerate = 60;
+#else
     myFramerate = 59.92;
+#endif
     myConsoleInfo.InitialFrameRate = "60";
   }
   else
   {
     // Assume we've got ~312 scanlines (PAL-like format)
+#ifdef TARGET_GNW
+    myFramerate = 50;
+#else
     myFramerate = 49.92;
+#endif
     myConsoleInfo.InitialFrameRate = "50";
 
     // PAL ROMs normally need at least 250 lines
