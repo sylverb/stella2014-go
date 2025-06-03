@@ -58,8 +58,12 @@ using namespace std;
 //////////////////////////////////////////////////////////////////////
 // Some convenience functions
 
+#ifndef MIN
 #define MIN(a, b) ((a < b) ? a : b)
+#endif
+#ifndef MAX
 #define MAX(a, b) ((a > b) ? a : b)
+#endif
 
 // Compare two strings, ignoring case
 inline int BSPF_compareIgnoreCase(const string& s1, const string& s2)

@@ -136,7 +136,7 @@ class OSystem
      Return the full/complete directory name for storing nvram
      (flash/EEPROM) files.
      */
-    const string& nvramDir() const { return myNVRamDir; } // TODO Sylver : store in /data/a2600/
+    const string& nvramDir() const { return myNVRamDir; }
 
     /**
       This method should be called to get the full path of the
@@ -207,7 +207,11 @@ class OSystem
 #endif
 
   private:
+#ifdef TARGET_GNW
+    string myNVRamDir = "/data/a2600/";
+#else
     string myNVRamDir;
+#endif
     string myPaletteFile;
 
   private:
